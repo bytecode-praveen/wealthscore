@@ -10,13 +10,9 @@ package in.wealthscore.repository;
  */
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface NewsFeedRepository extends MongoRepository<NewsFeedModel, String> {
-
-	public Page<NewsFeedModel> findAll(Pageable page);
 
 	public void save(List<NewsFeedModel> newsFeeds);
 

@@ -50,7 +50,7 @@ public class HackersNewsScheduler {
 	@Autowired
 	private NewsFeedRepository newsFeedRepo;
 
-	@Scheduled(initialDelay = 100, fixedDelay = 60 * 60 * 1000)
+	@Scheduled(initialDelay = 100000000, fixedDelay = 60 * 60 * 1000)
 	public void fetchTopStories() throws Exception {
 
 		RestTemplate restTemplate = new RestTemplate();
