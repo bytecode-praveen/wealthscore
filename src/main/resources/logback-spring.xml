@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="DEV_HOME" value="${log}" />
+  <property resource="application.properties" />
+
+  <property name="SERVICE_HOME" value="${DEV_HOME}/${spring.application.name}" />
+  <property name="FILE-DEBUG" value="FILE-DEBUG_${spring.application.name}" />
+  <property name="STDOUT" value="STDOUT_${spring.application.name}" />
+  <property name="FILE-ERROR" value="FILE-ERROR_${spring.application.name}" />
+  <property name="OTHERS" value="OTHERS_${spring.application.name}" />
+
+  <appender name="${STDOUT}" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}-%msg%n
+      </Pattern>
+    </layout>
+  </appender>
+  <appender name="${FILE-DEBUG}"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${SERVICE_HOME}/wealthscore-debug.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}-%msg%n
+      </Pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>${SERVICE_HOME}/archived/wealthscore-debug.%d{yyyy-MM-dd}.%i.log
+      </fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy
+        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <!-- <maxHistory>10</maxHistory> -->
+    </rollingPolicy>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+  </appender>
+  <appender name="${FILE-ERROR}"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${SERVICE_HOME}/wealthscore-error.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}-%msg%n
+      </Pattern>
+    </encoder>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>${SERVICE_HOME}/archived/wealthscore-error.%d{yyyy-MM-dd}.%i.log
+      </fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy
+        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <!-- <maxHistory>10</maxHistory> -->
+    </rollingPolicy>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+  <appender name="${OTHERS}"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${SERVICE_HOME}/wealthscore-other.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}-%msg%n
+      </Pattern>
+    </encoder>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>${SERVICE_HOME}/archived/wealthscore-other.%d{yyyy-MM-dd}.%i.log
+      </fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy
+        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <!-- <maxHistory>10</maxHistory> -->
+    </rollingPolicy>
+  </appender>
+  <!-- #logging.level.org.springframework, logging.level.org.springframework.data, 
+    logging.level.org.hibernate, ogging.level.org.springframework.web -->
+  
+  <springProfile name="prod">
+    <!-- Send logs to both console and file audit -->
+    <logger name="in.wealthscore" level="error" additivity="true">
+      <appender-ref ref="${FILE-ERROR}" />
+    </logger>
+    <logger name="in.wealthscore.config" level="info" additivity="true">
+      <appender-ref ref="${FILE-DEBUG}" />
+    </logger>
+    <!-- <logger name="in.wealthscore" level="error" additivity="true"> <appender-ref 
+      ref="${FILE-ERROR}" /> <appender-ref ref="${STDOUT}" /> </logger> -->
+    <!-- <logger name="in.wealthscore" level="error" additivity="true"> <appender-ref 
+      ref="FILE-ERROR" /> <appender-ref ref="STDOUT" /> </logger> -->
+    <logger name="org.springframework" level="info" additivity="true">
+      <appender-ref ref="${FILE-DEBUG}" />
+      <appender-ref ref="${FILE-ERROR}" />
+    </logger>
+
+    <root level="error">
+      <appender-ref ref="${FILE-ERROR}" />
+    </root>
+  </springProfile>
+  <springProfile name="default">
+    <!-- Send logs to both console and file audit -->
+    <logger name="in.wealthscore" level="debug" additivity="true">
+      <appender-ref ref="${FILE-DEBUG}" />
+      <appender-ref ref="${FILE-ERROR}" />
+      <appender-ref ref="${STDOUT}" />
+    </logger>
+    <!-- <logger name="in.wealthscore" level="error" additivity="true"> <appender-ref 
+      ref="${FILE-ERROR}" /> <appender-ref ref="${STDOUT}" /> </logger> -->
+    <!-- <logger name="in.wealthscore" level="error" additivity="true"> <appender-ref 
+      ref="FILE-ERROR" /> <appender-ref ref="STDOUT" /> </logger> -->
+    <logger name="org.springframework" level="info" additivity="true">
+      <appender-ref ref="${OTHERS}" />
+      <appender-ref ref="${STDOUT}" />
+    </logger>
+    <logger name="org.springframework.data" level="DEBUG">
+        <appender-ref ref="${OTHERS}" />
+      <appender-ref ref="${STDOUT}" />
+    </logger>
+        <logger name="org.hibernate" level="DEBUG">
+            <appender-ref ref="${OTHERS}" />
+      <appender-ref ref="${STDOUT}" />
+        </logger>
+
+    <root level="error">
+      <appender-ref ref="${FILE-ERROR}" />
+      <appender-ref ref="${STDOUT}" />
+    </root>
+  </springProfile>
+</configuration>
+
